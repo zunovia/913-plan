@@ -6,7 +6,7 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   try {
-    const flights = await cachedFetch('transport:flights', 15, fetchFlights)
+    const flights = await cachedFetch('transport:flights', 60, fetchFlights)
     return NextResponse.json({
       data: flights,
       count: flights.length,

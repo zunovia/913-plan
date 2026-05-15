@@ -8,8 +8,8 @@ export function useFlights() {
     '/api/transport/flights',
     fetcher,
     {
-      refreshInterval: 10_000,
-      dedupingInterval: 8_000,
+      refreshInterval: 60_000,
+      dedupingInterval: 55_000,
     },
   )
 

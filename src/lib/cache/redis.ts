@@ -11,23 +11,34 @@ function getRedis(): Redis | null {
   return redis
 }
 
+// In-memory fallback cache for when Redis is unavailable
+const memCache = new Map<string, { data: unknown; expiresAt: number }>()
+
 export async function cachedFetch<T>(
   key: string,
   ttlSeconds: number,
   fetchFn: () => Promise<T>,
 ): Promise<T> {
+  // Try Redis first
   const r = getRedis()
   if (r) {
     try {
       const cached = await r.get<T>(key)
       if (cached !== null && cached !== undefined) return cached
     } catch {
-      // Redis unavailable, fall through
+      // Redis unavailable, fall through to memory cache
     }
+  }
+
+  // Try in-memory cache
+  const mem = memCache.get(key)
+  if (mem && mem.expiresAt > Date.now()) {
+    return mem.data as T
   }
 
   const data = await fetchFn()
 
+  // Store in Redis
   if (r && ttlSeconds > 0) {
     try {
       await r.set(key, JSON.stringify(data), { ex: ttlSeconds })
@@ -35,6 +46,9 @@ export async function cachedFetch<T>(
       // Redis unavailable
     }
   }
+
+  // Store in memory cache
+  memCache.set(key, { data, expiresAt: Date.now() + ttlSeconds * 1000 })
 
   return data
 }

@@ -8,8 +8,17 @@ export async function fetchFlights(): Promise<Flight[]> {
   const url = `${OPENSKY_API}/states/all?lamin=${south}&lomin=${west}&lamax=${north}&lomax=${east}`
 
   try {
-    const res = await fetch(url, { next: { revalidate: 15 } })
-    if (!res.ok) return []
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+    const res = await fetch(url, {
+      signal: controller.signal,
+      next: { revalidate: 60 },
+    })
+    clearTimeout(timeout)
+    if (!res.ok) {
+      console.error(`OpenSky API returned ${res.status}`)
+      return []
+    }
     const data = await res.json()
 
     if (!data.states) return []

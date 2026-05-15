@@ -19,8 +19,8 @@ export async function GET() {
   }
 
   try {
-    const vessels = await cachedFetch<Vessel[]>('vessels:japan', 30, () =>
-      fetchVesselSnapshot(apiKey, 10_000, 200),
+    const vessels = await cachedFetch<Vessel[]>('vessels:japan', 120, () =>
+      fetchVesselSnapshot(apiKey, 8_000, 200),
     )
 
     return NextResponse.json({
