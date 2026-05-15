@@ -20,9 +20,9 @@ export async function GET() {
 
   try {
     // Vercel Hobby plan: max 10s function execution
-    // Allow ~5s for WS connect + collect, leaving margin for overhead
-    const vessels = await cachedFetch<Vessel[]>('vessels:japan', 120, () =>
-      fetchVesselSnapshot(apiKey, 5_000, 200),
+    // WS connect ~1-2s + collect 3s + response overhead = ~6-7s total
+    const vessels = await cachedFetch<Vessel[]>('vessels:japan', 180, () =>
+      fetchVesselSnapshot(apiKey, 3_000, 50),
     )
 
     const res = NextResponse.json({
