@@ -176,6 +176,11 @@ export function FlatMap() {
         return
       }
 
+      if (layerId === 'earthquake-layer') {
+        selectFeature({ type: 'earthquakes', id: String(Date.now()), data: info.object })
+        return
+      }
+
       if (layerId === 'flight-layer' || layerId === 'flight-highlight-layer') {
         const f = info.object as { icao24: string }
         selectFeature({ type: 'flights', id: f.icao24, data: info.object })

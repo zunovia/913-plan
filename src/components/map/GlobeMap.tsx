@@ -54,10 +54,14 @@ export function GlobeMap() {
   const containerRef = useRef<HTMLDivElement>(null)
   const globeRef = useRef<GlobeInstance | null>(null)
   const markersRef = useRef<HTMLDivElement[]>([])
-  const { viewState, visibleLayers } = useMapStore()
+  const { viewState, visibleLayers, selectFeature } = useMapStore()
   const { autoRotateGlobe } = useSettingsStore()
   const { earthquakes } = useEarthquakes()
   const openMedia = useMediaFrame((s) => s.open)
+  const selectFeatureRef = useRef(selectFeature)
+  selectFeatureRef.current = selectFeature
+  const earthquakesRef = useRef(earthquakes)
+  earthquakesRef.current = earthquakes
   const [, setTick] = useState(0)
 
   // Capture initial values for the one-time globe setup effect below.
@@ -164,18 +168,26 @@ export function GlobeMap() {
 
     globeRef.current
       .pointsData(
-        earthquakes.map((eq) => ({
+        earthquakes.map((eq, i) => ({
           lat: eq.latitude,
           lng: eq.longitude,
           size: Math.max(0.05, eq.magnitude * 0.03),
           color: rgbToHex(magnitudeToColor(eq.magnitude)),
           label: `M${eq.magnitude.toFixed(1)} - ${eq.place}`,
+          _index: i,
         })),
       )
       .pointAltitude('size')
       .pointColor('color')
       .pointRadius(0.3)
       .pointLabel('label')
+      .onPointClick((point: object) => {
+        const p = point as { _index: number }
+        const eq = earthquakesRef.current[p._index]
+        if (eq) {
+          selectFeatureRef.current({ type: 'earthquakes', id: eq.id, data: eq })
+        }
+      })
   }, [earthquakes])
 
   // Update world city HTML markers on globe
