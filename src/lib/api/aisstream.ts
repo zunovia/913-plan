@@ -42,6 +42,7 @@ export async function fetchVesselSnapshot(
     }
 
     ws.on('open', () => {
+      console.log('AISstream WebSocket connected')
       ws.send(
         JSON.stringify({
           Apikey: apiKey,
@@ -50,7 +51,10 @@ export async function fetchVesselSnapshot(
         }),
       )
 
-      timer = setTimeout(finish, durationMs)
+      timer = setTimeout(() => {
+        console.log(`AISstream: collected ${vessels.size} vessels in ${durationMs}ms`)
+        finish()
+      }, durationMs)
     })
 
     ws.on('message', (raw: Buffer) => {
@@ -98,7 +102,8 @@ export async function fetchVesselSnapshot(
       }
     })
 
-    ws.on('error', () => {
+    ws.on('error', (err: Error) => {
+      console.error('AISstream WebSocket error:', err.message)
       finish()
     })
 

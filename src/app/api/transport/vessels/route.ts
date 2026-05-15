@@ -20,7 +20,7 @@ export async function GET() {
 
   try {
     const vessels = await cachedFetch<Vessel[]>('vessels:japan', 120, () =>
-      fetchVesselSnapshot(apiKey, 8_000, 200),
+      fetchVesselSnapshot(apiKey, 15_000, 200),
     )
 
     const res = NextResponse.json({
