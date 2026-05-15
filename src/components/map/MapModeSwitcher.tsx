@@ -7,7 +7,7 @@ export function MapModeSwitcher() {
   const { mode, setMode } = useMapStore()
 
   return (
-    <div className="absolute top-4 left-16 z-10 flex bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 p-0.5">
+    <div className="absolute top-3 left-3 md:top-4 md:left-16 z-10 flex bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 p-0.5">
       <button
         type="button"
         onClick={() => setMode('2d')}

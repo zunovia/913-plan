@@ -7,8 +7,11 @@ import {
   getGoogleMapsEmbedUrl,
   getGoogleMapsUrl,
   getLocalTime,
+  JAPAN_CITIES,
   WORLD_CITIES,
 } from '@/lib/geo/cities'
+
+const ALL_CITIES = [...JAPAN_CITIES, ...WORLD_CITIES]
 import { magnitudeToColor } from '@/lib/geo/intensity-scale'
 import { useMapStore } from '@/stores/mapStore'
 import { useSettingsStore } from '@/stores/settingsStore'
@@ -93,9 +96,9 @@ export function GlobeMap() {
 
       const Globe = GlobeModule.default
       const globe = new Globe(containerRef.current)
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+        .globeImageUrl('/textures/8k_earth_daymap.jpg')
+        .bumpImageUrl('/textures/8k_earth_nightmap.jpg')
+        .backgroundImageUrl('/textures/8k_stars_milky_way.jpg')
         .showAtmosphere(true)
         .atmosphereColor('#4da6ff')
         .atmosphereAltitude(0.2)
@@ -105,17 +108,16 @@ export function GlobeMap() {
           altitude: 2.5,
         })
 
-      // Clouds layer
-      const CLOUDS_IMG = '//unpkg.com/three-globe/example/img/earth-water.png'
+      // Clouds layer (8K texture)
       import('three').then(({ TextureLoader, MeshPhongMaterial, SphereGeometry, Mesh }) => {
-        new TextureLoader().load(CLOUDS_IMG, (cloudsTexture) => {
+        new TextureLoader().load('/textures/8k_earth_clouds.jpg', (cloudsTexture) => {
           if (!mounted) return
           const radius = (globe.getGlobeRadius?.() ?? 100) * 1.004
-          const cloudGeo = new SphereGeometry(radius, 75, 75)
+          const cloudGeo = new SphereGeometry(radius, 128, 128)
           const cloudMat = new MeshPhongMaterial({
             map: cloudsTexture,
             transparent: true,
-            opacity: 0.15,
+            opacity: 0.2,
           })
           const clouds = new Mesh(cloudGeo, cloudMat)
           globe.scene().add(clouds)
@@ -188,7 +190,7 @@ export function GlobeMap() {
       return
     }
 
-    const markerData: WorldCityMarker[] = WORLD_CITIES.map((c) => ({
+    const markerData: WorldCityMarker[] = ALL_CITIES.map((c) => ({
       lat: c.latitude,
       lng: c.longitude,
       name: c.name,

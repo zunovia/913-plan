@@ -11,11 +11,11 @@ export function SettingsMenu() {
     useSettingsStore()
 
   return (
-    <div className="absolute top-4 right-4 z-10">
+    <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-400 hover:text-white transition-colors"
+        className="p-2.5 md:p-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-400 hover:text-white transition-colors"
       >
         <Settings size={16} />
       </button>

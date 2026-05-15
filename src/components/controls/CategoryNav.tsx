@@ -27,14 +27,14 @@ export function CategoryNav() {
   const { activePanel, togglePanel } = usePanelStore()
 
   return (
-    <div className="absolute left-0 top-0 bottom-0 w-12 bg-gray-900/90 backdrop-blur-sm border-r border-gray-700/50 z-20 flex flex-col items-center py-3 gap-1">
+    <div className="fixed bottom-0 left-0 right-0 h-14 z-30 flex flex-row items-center justify-around bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 md:absolute md:left-0 md:top-0 md:bottom-0 md:right-auto md:h-auto md:w-12 md:flex-col md:justify-start md:py-3 md:gap-1 md:border-t-0 md:border-r md:bg-gray-900/90">
       {CATEGORIES.map(({ key, icon: Icon, label }) => (
         <button
           type="button"
           key={key}
           onClick={() => togglePanel(key)}
           title={label}
-          className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${
+          className={`w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-lg transition-all ${
             activePanel === key
               ? 'bg-blue-600/30 text-blue-400'
               : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
@@ -45,7 +45,7 @@ export function CategoryNav() {
       ))}
 
       {/* Company Logo */}
-      <div className="mt-auto">
+      <div className="hidden md:block md:mt-auto">
         <a
           href="https://surc.online/"
           target="_blank"

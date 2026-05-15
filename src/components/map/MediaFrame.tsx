@@ -29,27 +29,44 @@ interface MediaFrameState {
   setLayout: (layout: Partial<FrameLayout>) => void
 }
 
-const DEFAULT_LAYOUT: FrameLayout = { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H }
+function getMobileLayout(): FrameLayout {
+  const w = typeof window !== 'undefined' ? window.innerWidth : 375
+  return { x: 0, bottomY: 88, w, h: Math.round(w * 9 / 16) }
+}
+
+function getDefaultLayout(): FrameLayout {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    return getMobileLayout()
+  }
+  return { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H }
+}
 
 export const useMediaFrame = create<MediaFrameState>((set) => ({
   url: null,
   externalUrl: null,
   title: '',
   isExpanded: false,
-  layout: DEFAULT_LAYOUT,
-  // Resetting layout here avoids calling setState inside useEffect
+  layout: { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H },
   open: (url, title, externalUrl) =>
     set({
       url,
       externalUrl: externalUrl ?? null,
       title,
       isExpanded: false,
-      layout: DEFAULT_LAYOUT,
+      layout: getDefaultLayout(),
     }),
   close: () =>
-    set({ url: null, externalUrl: null, title: '', isExpanded: false, layout: DEFAULT_LAYOUT }),
+    set({ url: null, externalUrl: null, title: '', isExpanded: false, layout: { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H } }),
   toggleExpand: () =>
     set((s) => {
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        // Mobile: toggle fullscreen
+        const next = !s.isExpanded
+        if (next) {
+          return { isExpanded: true, layout: { x: 0, bottomY: 0, w: window.innerWidth, h: window.innerHeight } }
+        }
+        return { isExpanded: false, layout: getMobileLayout() }
+      }
       const next = !s.isExpanded
       return {
         isExpanded: next,
@@ -77,13 +94,11 @@ function isEmbeddable(url: string): boolean {
 }
 
 function toExternalUrl(url: string): string {
-  // Convert Google Maps embed URL to a normal browseable URL
   const mapsEmbed = url.match(/maps\.google\.com\/maps\?q=([^&]+)/)
   if (mapsEmbed) {
     return `https://www.google.com/maps/search/${mapsEmbed[1]}`
   }
 
-  // Convert YouTube embed URL back to watch URL
   const ytEmbed = url.match(/youtube\.com\/embed\/([^?]+)/)
   if (ytEmbed) {
     return `https://www.youtube.com/watch?v=${ytEmbed[1]}`
@@ -98,19 +113,29 @@ export function MediaFrame() {
 
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   const dragStart = useRef({ mx: 0, my: 0, ox: 0, oy: 0 })
   const resizeStart = useRef({ mx: 0, my: 0, ow: 0, oh: 0 })
   const frameRef = useRef<HTMLDivElement>(null)
 
+  // Track mobile state
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   // Drag handlers
   const onDragStart = useCallback((e: React.MouseEvent) => {
+    if (isMobile) return
     e.preventDefault()
     setIsDragging(true)
     const rect = frameRef.current?.getBoundingClientRect()
     if (!rect) return
     dragStart.current = { mx: e.clientX, my: e.clientY, ox: rect.left, oy: rect.top }
-  }, [])
+  }, [isMobile])
 
   useEffect(() => {
     if (!isDragging) return
@@ -132,12 +157,13 @@ export function MediaFrame() {
   // Resize handlers (bottom-right corner)
   const onResizeStart = useCallback(
     (e: React.MouseEvent) => {
+      if (isMobile) return
       e.preventDefault()
       e.stopPropagation()
       setIsResizing(true)
       resizeStart.current = { mx: e.clientX, my: e.clientY, ow: layout.w, oh: layout.h }
     },
-    [layout.w, layout.h],
+    [layout.w, layout.h, isMobile],
   )
 
   useEffect(() => {
@@ -169,10 +195,21 @@ export function MediaFrame() {
   const headerH = 32
   const iframeH = layout.h - headerH
 
-  const style: React.CSSProperties =
-    layout.bottomY >= 0
+  const style: React.CSSProperties = isMobile
+    ? { left: 0, right: 0, bottom: 88, width: '100%', height: layout.h }
+    : layout.bottomY >= 0
       ? { left: layout.x, bottom: layout.bottomY, width: layout.w, height: layout.h }
       : { left: layout.x, top: layout.bottomY * -1, width: layout.w, height: layout.h }
+
+  // Override style for fullscreen mobile
+  if (isMobile && isExpanded) {
+    style.left = 0
+    style.right = 0
+    style.top = 0
+    style.bottom = 0
+    style.width = '100%'
+    style.height = '100%'
+  }
 
   return (
     <AnimatePresence>
@@ -181,18 +218,18 @@ export function MediaFrame() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="absolute z-40 shadow-2xl rounded-lg overflow-hidden border border-gray-700/50 bg-gray-900"
+        className={`${isMobile ? 'fixed' : 'absolute'} z-40 shadow-2xl rounded-lg overflow-hidden border border-gray-700/50 bg-gray-900`}
         style={style}
       >
-        {/* Header — draggable */}
+        {/* Header — draggable on desktop only */}
         <div
           role="toolbar"
           aria-label="メディアフレームヘッダー"
           onMouseDown={onDragStart}
           className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800/90 border-b border-gray-700/50 select-none"
-          style={{ cursor: isDragging ? 'grabbing' : 'grab', height: headerH }}
+          style={{ cursor: isMobile ? 'default' : isDragging ? 'grabbing' : 'grab', height: headerH }}
         >
-          <GripHorizontal size={12} className="text-gray-600 shrink-0" />
+          {!isMobile && <GripHorizontal size={12} className="text-gray-600 shrink-0" />}
           <p className="flex-1 text-[11px] text-gray-300 truncate">{title}</p>
           <a
             href={linkUrl}
@@ -253,29 +290,31 @@ export function MediaFrame() {
           </div>
         )}
 
-        {/* Resize handle (bottom-right corner) */}
-        <button
-          type="button"
-          aria-label="リサイズ"
-          onMouseDown={onResizeStart}
-          className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent border-0 p-0"
-          style={{ zIndex: 50 }}
-        >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            className="absolute bottom-1 right-1 text-gray-500"
-            aria-hidden="true"
+        {/* Resize handle (desktop only) */}
+        {!isMobile && (
+          <button
+            type="button"
+            aria-label="リサイズ"
+            onMouseDown={onResizeStart}
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent border-0 p-0"
+            style={{ zIndex: 50 }}
           >
-            <path
-              d="M9 1L1 9M9 5L5 9M9 9L9 9"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              fill="none"
-            />
-          </svg>
-        </button>
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              className="absolute bottom-1 right-1 text-gray-500"
+              aria-hidden="true"
+            >
+              <path
+                d="M9 1L1 9M9 5L5 9M9 9L9 9"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                fill="none"
+              />
+            </svg>
+          </button>
+        )}
       </motion.div>
     </AnimatePresence>
   )

@@ -44,10 +44,7 @@ function seededOffset(index: number, scale: number): number {
   return (x - Math.floor(x) - 0.5) * scale
 }
 
-export interface ThreatPoint {
-  id: string
-  title: string
-  severity: string
+export interface ThreatPoint extends CyberThreat {
   longitude: number
   latitude: number
 }
@@ -56,9 +53,7 @@ export function mapThreatsToPoints(threats: CyberThreat[]): ThreatPoint[] {
   return threats.map((threat, index) => {
     const hub = JAPAN_HUBS[index % JAPAN_HUBS.length]
     return {
-      id: threat.id,
-      title: threat.title,
-      severity: threat.severity,
+      ...threat,
       longitude: hub.longitude + seededOffset(index * 2, 1.5),
       latitude: hub.latitude + seededOffset(index * 2 + 1, 1.0),
     }

@@ -26,7 +26,7 @@ import {
   createWorldCityTimeLayer,
 } from './layers/CityLayer'
 import { createCyberThreatLayer } from './layers/CyberThreatLayer'
-import { createDataCenterLayer } from './layers/DataCenterLayer'
+import { createDataCenterLayer, type DCPoint } from './layers/DataCenterLayer'
 import { createEarthquakeLayer } from './layers/EarthquakeLayer'
 import { createFlightLayer } from './layers/FlightLayer'
 import { createPrefectureLayer } from './layers/PrefectureLayer'
@@ -35,23 +35,22 @@ import { createWeatherWarningLayer } from './layers/WeatherLayer'
 import { useMediaFrame } from './MediaFrame'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
-const TILE_URLS: Record<string, string> = {
-  openfreemap: 'https://tiles.openfreemap.org/styles/dark',
-  google: 'https://tiles.openfreemap.org/styles/dark',
+const TILE_URLS: Record<string, Record<string, string>> = {
+  dark: {
+    openfreemap: 'https://tiles.openfreemap.org/styles/dark',
+    google: 'https://tiles.openfreemap.org/styles/dark',
+  },
+  light: {
+    openfreemap: 'https://tiles.openfreemap.org/styles/bright',
+    google: 'https://tiles.openfreemap.org/styles/bright',
+  },
 }
 
 const ALL_CITIES = [...JAPAN_CITIES, ...WORLD_CITIES]
 
-interface DCPoint {
-  name: string
-  operator: string
-  longitude: number
-  latitude: number
-}
-
 export function FlatMap() {
   const { viewState, setViewState, visibleLayers, selectFeature, selectedFeature } = useMapStore()
-  const { tileProvider } = useSettingsStore()
+  const { tileProvider, theme } = useSettingsStore()
   const { earthquakes } = useEarthquakes()
   const { flights } = useFlights()
   const { vessels } = useVessels()
@@ -172,6 +171,11 @@ export function FlatMap() {
         return
       }
 
+      if (layerId === 'datacenter-layer') {
+        selectFeature({ type: 'dataCenters', id: String(Date.now()), data: info.object })
+        return
+      }
+
       if (layerId === 'flight-layer' || layerId === 'flight-highlight-layer') {
         const f = info.object as { icao24: string }
         selectFeature({ type: 'flights', id: f.icao24, data: info.object })
@@ -188,7 +192,8 @@ export function FlatMap() {
     [selectFeature, openMedia],
   )
 
-  const styleUrl = TILE_URLS[tileProvider] || TILE_URLS.openfreemap
+  const themeKey = theme === 'light' ? 'light' : 'dark'
+  const styleUrl = TILE_URLS[themeKey]?.[tileProvider] || TILE_URLS.dark.openfreemap
 
   return (
     <ReactMapGL

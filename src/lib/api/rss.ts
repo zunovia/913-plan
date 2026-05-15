@@ -16,25 +16,42 @@ const RSS_FEEDS: RssFeedConfig[] = [
 
 // YouTube news channels (Atom feeds)
 const YOUTUBE_FEEDS: RssFeedConfig[] = [
+  // 日本のニュースチャンネル
   {
     url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ',
-    source: 'NHK NEWS (YT)',
+    source: '日テレNEWS',
     language: 'ja',
   },
   {
     url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCGCZAYq5Xxojl_tSXcVJhiQ',
-    source: 'ANN NEWS (YT)',
-    language: 'ja',
-  },
-  {
-    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ',
-    source: '日テレNEWS (YT)',
+    source: 'テレビ朝日 ANN',
     language: 'ja',
   },
   {
     url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6AG81pAkf6Lbi_1VC5NmPA',
-    source: 'TBS NEWS (YT)',
+    source: 'TBS NEWS DIG',
     language: 'ja',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCkKVQ_GNjd8FbAuT6xDcWgg',
+    source: 'テレ東BIZ',
+    language: 'ja',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCip8ve30-AoX2y2OtAAmqFA',
+    source: 'NHK',
+    language: 'ja',
+  },
+  // 海外ニュースチャンネル
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCupvZG-5ko_eiXAupbDfxWw',
+    source: 'CNN',
+    language: 'en',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC16niRr50-MSBwiO3YDb3RA',
+    source: 'BBC News',
+    language: 'en',
   },
 ]
 

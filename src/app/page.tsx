@@ -33,7 +33,7 @@ export default function Home() {
         <CategoryNav />
 
         {/* Map Area */}
-        <div className="absolute inset-0 ml-12">
+        <div className="absolute inset-0 ml-0 mb-14 md:ml-12 md:mb-0">
           <MapContainer />
         </div>
 

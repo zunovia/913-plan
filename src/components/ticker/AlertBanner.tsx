@@ -40,13 +40,13 @@ export function AlertBanner() {
   const alert = recentAlerts[0]
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 bg-red-900/90 backdrop-blur-sm border-b border-red-700 px-4 py-2 flex items-center gap-3 animate-pulse">
+    <div className="absolute top-0 left-0 right-0 z-50 bg-red-900/90 backdrop-blur-sm border-b border-red-700 px-3 md:px-4 py-2 flex items-center gap-2 md:gap-3 animate-pulse">
       <AlertTriangle size={18} className="text-red-300 shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-red-100">
+        <p className="text-xs md:text-sm font-bold text-red-100">
           緊急地震情報: M{alert.magnitude.toFixed(1)} - {alert.place}
         </p>
-        <p className="text-xs text-red-300">
+        <p className="text-[10px] md:text-xs text-red-300">
           {new Date(alert.time).toLocaleString('ja-JP')} · 深さ{alert.depth}km
           {alert.tsunami && ' · 津波注意'}
         </p>

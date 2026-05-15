@@ -12,21 +12,20 @@ export function LayerToggle() {
   const dragging = useRef(false)
   const dragStart = useRef({ x: 0, y: 0, px: 0, py: 0 })
   const moved = useRef(false)
-  const containerRef = useRef<HTMLDivElement>(null)
 
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    // Only drag from the grip handle
-    const target = e.target as HTMLElement
-    if (!target.closest('[data-drag-handle]')) return
+  const onGripPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      dragging.current = true
+      moved.current = false
+      dragStart.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y }
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+      e.preventDefault()
+      e.stopPropagation()
+    },
+    [pos],
+  )
 
-    dragging.current = true
-    moved.current = false
-    dragStart.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y }
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-    e.preventDefault()
-  }, [pos])
-
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
+  const onGripPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragging.current) return
     const dx = e.clientX - dragStart.current.x
     const dy = e.clientY - dragStart.current.y
@@ -34,7 +33,7 @@ export function LayerToggle() {
     setPos({ x: dragStart.current.px + dx, y: dragStart.current.py + dy })
   }, [])
 
-  const onPointerUp = useCallback(() => {
+  const onGripPointerUp = useCallback(() => {
     dragging.current = false
   }, [])
 
@@ -46,18 +45,16 @@ export function LayerToggle() {
 
   return (
     <div
-      ref={containerRef}
-      className="absolute bottom-24 right-4 z-10"
+      className="absolute bottom-20 right-3 md:bottom-24 md:right-4 z-10"
       style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
     >
       <div className="flex items-center gap-0">
-        {/* Drag handle */}
+        {/* Drag handle — pointer events are isolated here */}
         <div
-          data-drag-handle
-          className="flex items-center px-1 py-2 cursor-grab active:cursor-grabbing text-gray-600 hover:text-gray-400 transition-colors"
+          className="hidden md:flex items-center px-1 py-2 cursor-grab active:cursor-grabbing text-gray-600 hover:text-gray-400 transition-colors"
+          onPointerDown={onGripPointerDown}
+          onPointerMove={onGripPointerMove}
+          onPointerUp={onGripPointerUp}
         >
           <GripVertical size={12} />
         </div>
@@ -65,8 +62,9 @@ export function LayerToggle() {
           type="button"
           onClick={() => {
             if (!moved.current) setIsOpen(!isOpen)
+            moved.current = false
           }}
-          className="flex items-center gap-1.5 px-3 py-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-300 hover:text-white transition-colors text-xs"
+          className="flex items-center gap-1.5 px-3.5 py-2.5 md:px-3 md:py-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-300 hover:text-white transition-colors text-xs"
         >
           <Layers size={14} />
           レイヤー
