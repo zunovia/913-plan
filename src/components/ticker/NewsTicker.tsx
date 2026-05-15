@@ -1,12 +1,15 @@
 'use client'
 
+import type { MouseEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useMediaFrame } from '@/components/map/MediaFrame'
 import { useNewsFeed } from '@/hooks/useNewsFeed'
 import { useSettingsStore } from '@/stores/settingsStore'
-import { useRef, useEffect, useState } from 'react'
 
 export function NewsTicker() {
   const { news } = useNewsFeed()
   const { showTicker, tickerSpeed } = useSettingsStore()
+  const openMedia = useMediaFrame((s) => s.open)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [offset, setOffset] = useState(0)
 
@@ -26,6 +29,12 @@ export function NewsTicker() {
     return () => clearInterval(interval)
   }, [showTicker, tickerSpeed, news.length])
 
+  const handleClick = (e: MouseEvent, link: string, title: string) => {
+    if (e.ctrlKey || e.metaKey) return
+    e.preventDefault()
+    openMedia(link, title)
+  }
+
   if (!showTicker || news.length === 0) return null
 
   return (
@@ -44,6 +53,7 @@ export function NewsTicker() {
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => handleClick(e, item.link, item.title)}
               className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
               <span className="text-gray-600 mr-1">[{item.source}]</span>

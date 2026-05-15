@@ -7,6 +7,7 @@ export type LayerType =
   | 'dataCenters'
   | 'cyberThreats'
   | 'prefectures'
+  | 'cities'
 
 export type MapMode = '2d' | '3d'
 
@@ -19,4 +20,4 @@ export interface LayerDefinition {
   refreshInterval: number
 }
 
-export type PanelType = 'news' | 'disaster' | 'market' | 'transport' | 'cyber' | 'infra'
+export type PanelType = 'news' | 'disaster' | 'weather' | 'market' | 'transport' | 'cyber' | 'infra'

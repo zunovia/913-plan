@@ -25,7 +25,8 @@ export async function summarizeNews(articles: NewsItem[]): Promise<string> {
     messages: [
       {
         role: 'system',
-        content: 'You are a concise news analyst. Summarize the following Japanese news headlines into 3-5 bullet points in both Japanese and English. Focus on the most impactful stories. Keep each bullet under 100 characters.',
+        content:
+          'You are a concise news analyst. Summarize the following Japanese news headlines into 3-5 bullet points in both Japanese and English. Focus on the most impactful stories. Keep each bullet under 100 characters.',
       },
       {
         role: 'user',

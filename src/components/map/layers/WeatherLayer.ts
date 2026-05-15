@@ -1,7 +1,10 @@
 import { GeoJsonLayer } from '@deck.gl/layers'
 import type { Feature, FeatureCollection } from 'geojson'
 
-export function createWeatherLayer(data: FeatureCollection | Feature | null | undefined, visible: boolean) {
+export function createWeatherLayer(
+  data: FeatureCollection | Feature | null | undefined,
+  visible: boolean,
+) {
   return new GeoJsonLayer({
     id: 'weather-layer',
     data: data ?? ({ type: 'FeatureCollection', features: [] } as FeatureCollection),

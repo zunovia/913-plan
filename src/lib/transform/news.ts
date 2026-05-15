@@ -1,14 +1,12 @@
 import type { NewsItem } from '@/types/news'
 
 export function sortNewsByDate(items: NewsItem[]): NewsItem[] {
-  return [...items].sort(
-    (a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
-  )
+  return [...items].sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
 }
 
 export function filterNewsByLanguage(
   items: NewsItem[],
-  language: 'ja' | 'en' | 'both'
+  language: 'ja' | 'en' | 'both',
 ): NewsItem[] {
   if (language === 'both') return items
   return items.filter((item) => item.language === language)

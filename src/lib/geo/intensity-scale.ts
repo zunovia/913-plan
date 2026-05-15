@@ -21,7 +21,7 @@ export function getIntensityColor(scale: number): string {
 }
 
 export function magnitudeToRadius(mag: number): number {
-  return Math.max(4, Math.pow(2, mag) * 0.5)
+  return Math.max(4, 2 ** mag * 0.5)
 }
 
 export function magnitudeToColor(mag: number): [number, number, number, number] {

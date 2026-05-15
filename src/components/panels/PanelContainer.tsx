@@ -1,18 +1,20 @@
 'use client'
 
-import { usePanelStore } from '@/stores/panelStore'
-import { NewsFeedPanel } from './NewsFeedPanel'
-import { DisasterPanel } from './DisasterPanel'
-import { MarketPanel } from './MarketPanel'
-import { TransportPanel } from './TransportPanel'
-import { CyberPanel } from './CyberPanel'
-import { InfraPanel } from './InfraPanel'
+import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { usePanelStore } from '@/stores/panelStore'
+import { CyberPanel } from './CyberPanel'
+import { DisasterPanel } from './DisasterPanel'
+import { InfraPanel } from './InfraPanel'
+import { MarketPanel } from './MarketPanel'
+import { NewsFeedPanel } from './NewsFeedPanel'
+import { TransportPanel } from './TransportPanel'
+import { WeatherPanel } from './WeatherPanel'
 
 const PANELS = {
   news: NewsFeedPanel,
   disaster: DisasterPanel,
+  weather: WeatherPanel,
   market: MarketPanel,
   transport: TransportPanel,
   cyber: CyberPanel,
@@ -39,6 +41,7 @@ export function PanelContainer() {
               {activePanel}
             </h2>
             <button
+              type="button"
               onClick={closePanel}
               className="p-1 rounded hover:bg-gray-700/50 text-gray-400 hover:text-gray-200 transition-colors"
             >

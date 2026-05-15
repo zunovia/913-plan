@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { cachedFetch } from '@/lib/cache/redis'
 import { fetchP2PEarthquakes } from '@/lib/api/p2p-earthquake'
 import { fetchUSGSEarthquakes } from '@/lib/api/usgs'
+import { cachedFetch } from '@/lib/cache/redis'
 import { deduplicateEarthquakes } from '@/lib/transform/earthquake'
 
 export const runtime = 'nodejs'

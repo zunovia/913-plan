@@ -7,7 +7,7 @@ export function useCyberThreats() {
   const { data, error, isLoading } = useSWR<{ data: CyberThreat[] }>(
     '/api/cyber/threats',
     fetcher,
-    { refreshInterval: 600_000 }
+    { refreshInterval: 600_000 },
   )
 
   return {

@@ -26,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ja" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
+    <html
+      lang="ja"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+    >
       <body className="h-full overflow-hidden bg-gray-950 text-gray-100">
         <Providers>{children}</Providers>
       </body>

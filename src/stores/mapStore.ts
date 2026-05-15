@@ -22,6 +22,8 @@ interface MapState {
   setLayerVisible: (layer: LayerType, visible: boolean) => void
   selectFeature: (feature: MapState['selectedFeature']) => void
   clearSelection: () => void
+  hideAllLayers: () => void
+  showAllLayers: () => void
 }
 
 const DEFAULT_VIEW: ViewState = {
@@ -32,7 +34,16 @@ const DEFAULT_VIEW: ViewState = {
   bearing: 0,
 }
 
-const DEFAULT_VISIBLE: LayerType[] = ['earthquakes', 'weather', 'prefectures']
+const DEFAULT_VISIBLE: LayerType[] = [
+  'earthquakes',
+  'weather',
+  'prefectures',
+  'cities',
+  'flights',
+  'vessels',
+  'cables',
+  'dataCenters',
+]
 
 export const useMapStore = create<MapState>((set) => ({
   mode: '2d',
@@ -42,8 +53,7 @@ export const useMapStore = create<MapState>((set) => ({
   isLoading: false,
 
   setMode: (mode) => set({ mode }),
-  setViewState: (vs) =>
-    set((state) => ({ viewState: { ...state.viewState, ...vs } })),
+  setViewState: (vs) => set((state) => ({ viewState: { ...state.viewState, ...vs } })),
   toggleLayer: (layer) =>
     set((state) => {
       const next = new Set(state.visibleLayers)
@@ -60,4 +70,6 @@ export const useMapStore = create<MapState>((set) => ({
     }),
   selectFeature: (feature) => set({ selectedFeature: feature }),
   clearSelection: () => set({ selectedFeature: null }),
+  hideAllLayers: () => set({ visibleLayers: new Set<LayerType>() }),
+  showAllLayers: () => set({ visibleLayers: new Set<LayerType>(DEFAULT_VISIBLE) }),
 }))

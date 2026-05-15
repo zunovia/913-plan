@@ -27,7 +27,7 @@ body {
 }
 
 .maplibregl-ctrl-attrib {
-  font-size: 10px !important;
+  font-size: 10px;
   opacity: 0.5;
 }
 

@@ -16,10 +16,26 @@ const RSS_FEEDS: RssFeedConfig[] = [
 
 // YouTube news channels (Atom feeds)
 const YOUTUBE_FEEDS: RssFeedConfig[] = [
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ', source: 'NHK NEWS (YT)', language: 'ja' },
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCGCZAYq5Xxojl_tSXcVJhiQ', source: 'ANN NEWS (YT)', language: 'ja' },
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ', source: '日テレNEWS (YT)', language: 'ja' },
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6AG81pAkf6Lbi_1VC5NmPA', source: 'TBS NEWS (YT)', language: 'ja' },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ',
+    source: 'NHK NEWS (YT)',
+    language: 'ja',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCGCZAYq5Xxojl_tSXcVJhiQ',
+    source: 'ANN NEWS (YT)',
+    language: 'ja',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuTAXTexrhetbOe3zgskJBQ',
+    source: '日テレNEWS (YT)',
+    language: 'ja',
+  },
+  {
+    url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6AG81pAkf6Lbi_1VC5NmPA',
+    source: 'TBS NEWS (YT)',
+    language: 'ja',
+  },
 ]
 
 export function getAllFeedConfigs(): RssFeedConfig[] {
@@ -45,8 +61,7 @@ function parseRSSXML(xml: string, config: RssFeedConfig): NewsItem[] {
   if (isAtom) {
     // YouTube Atom feed format
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g
-    let match: RegExpExecArray | null
-    while ((match = entryRegex.exec(xml)) !== null) {
+    for (const match of xml.matchAll(entryRegex)) {
       const content = match[1]
       const title = extractTag(content, 'title')
       const videoId = extractTag(content, 'yt:videoId')
@@ -68,8 +83,7 @@ function parseRSSXML(xml: string, config: RssFeedConfig): NewsItem[] {
   } else {
     // Standard RSS format
     const itemRegex = /<item>([\s\S]*?)<\/item>/g
-    let match: RegExpExecArray | null
-    while ((match = itemRegex.exec(xml)) !== null) {
+    for (const match of xml.matchAll(itemRegex)) {
       const content = match[1]
       const title = extractTag(content, 'title')
       const link = extractTag(content, 'link')
@@ -77,7 +91,7 @@ function parseRSSXML(xml: string, config: RssFeedConfig): NewsItem[] {
 
       if (title && link) {
         items.push({
-          id: `${config.source}-${Buffer.from(link).toString('base64').slice(0, 16)}`,
+          id: `${config.source}-${simpleHash(link)}`,
           title: decodeHTMLEntities(title),
           link,
           pubDate: pubDate || new Date().toISOString(),
@@ -110,4 +124,13 @@ function decodeHTMLEntities(str: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+}
+
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash + char) | 0
+  }
+  return (hash >>> 0).toString(36)
 }

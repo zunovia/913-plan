@@ -7,7 +7,7 @@ export function useNewsFeed() {
   const { data, error, isLoading, mutate } = useSWR<{ data: NewsItem[] }>(
     '/api/news/feed',
     fetcher,
-    { refreshInterval: 300_000 }
+    { refreshInterval: 300_000 },
   )
 
   return {

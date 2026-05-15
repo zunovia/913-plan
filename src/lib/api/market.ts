@@ -1,48 +1,73 @@
-import type { MarketData, MarketIndex, ForexRate } from '@/types/market'
+import type { ForexRate, MarketData, MarketIndex } from '@/types/market'
 
-const FRANKFURTER_API = 'https://api.frankfurter.app'
+const DASHBOARD_API = 'https://dashboard-olive-omega.vercel.app/api/data'
 
-export async function fetchForexRates(): Promise<ForexRate[]> {
-  try {
-    const res = await fetch(`${FRANKFURTER_API}/latest?from=USD&to=JPY,EUR,GBP,CNY`, {
-      next: { revalidate: 3600 },
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    return Object.entries(data.rates as Record<string, number>).map(([to, rate]) => ({
-      from: 'USD',
-      to,
-      rate,
-      date: data.date,
-    }))
-  } catch {
-    return []
-  }
+// Category mapping for display grouping
+const FOREX_SYMBOLS = new Set(['JPY=X', 'EURJPY=X', 'GBPJPY=X'])
+
+const FOREX_PAIR_MAP: Record<string, { from: string; to: string }> = {
+  'JPY=X': { from: 'USD', to: 'JPY' },
+  'EURJPY=X': { from: 'EUR', to: 'JPY' },
+  'GBPJPY=X': { from: 'GBP', to: 'JPY' },
+}
+
+interface DashboardMarketItem {
+  symbol: string
+  display_name: string
+  category: string
+  date: string
+  open: number | null
+  high: number | null
+  low: number | null
+  close: number
+  prev_close: number | null
+  change_pct: number | null
+  volume: number | null
 }
 
 export async function fetchMarketData(): Promise<MarketData> {
-  // Market data from yahoo-finance2 would be server-side only
-  // For now, provide a structure with forex data
-  const forex = await fetchForexRates()
+  const indices: MarketIndex[] = []
+  const forex: ForexRate[] = []
 
-  const indices: MarketIndex[] = [
-    {
-      symbol: '^N225',
-      name: '日経平均',
-      price: 0,
-      change: 0,
-      changePercent: 0,
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      symbol: '^TOPX',
-      name: 'TOPIX',
-      price: 0,
-      change: 0,
-      changePercent: 0,
-      updatedAt: new Date().toISOString(),
-    },
-  ]
+  try {
+    const res = await fetch(DASHBOARD_API, {
+      next: { revalidate: 60 },
+    })
+
+    if (!res.ok) {
+      console.error('Dashboard API returned', res.status)
+      return { indices, forex, updatedAt: new Date().toISOString() }
+    }
+
+    const json = await res.json()
+    const items: DashboardMarketItem[] = json.market_data ?? []
+
+    for (const item of items) {
+      if (FOREX_SYMBOLS.has(item.symbol)) {
+        const pair = FOREX_PAIR_MAP[item.symbol]
+        if (pair) {
+          forex.push({
+            from: pair.from,
+            to: pair.to,
+            rate: item.close,
+            date: item.date,
+          })
+        }
+      } else {
+        const change = item.prev_close != null ? item.close - item.prev_close : 0
+        indices.push({
+          symbol: item.symbol,
+          name: item.display_name,
+          price: item.close,
+          change,
+          changePercent: item.change_pct ?? 0,
+          updatedAt: item.date,
+        })
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch from dashboard API:', error)
+  }
 
   return {
     indices,

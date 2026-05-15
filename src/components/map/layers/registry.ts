@@ -30,7 +30,7 @@ export const LAYER_REGISTRY: LayerDefinition[] = [
     label: '船舶',
     icon: 'ship',
     renderers: ['flat', 'globe'],
-    defaultVisible: false,
+    defaultVisible: true,
     refreshInterval: 30_000,
   },
   {
@@ -38,7 +38,7 @@ export const LAYER_REGISTRY: LayerDefinition[] = [
     label: '海底ケーブル',
     icon: 'cable',
     renderers: ['flat', 'globe'],
-    defaultVisible: false,
+    defaultVisible: true,
     refreshInterval: 0,
   },
   {
@@ -46,7 +46,7 @@ export const LAYER_REGISTRY: LayerDefinition[] = [
     label: 'データセンター',
     icon: 'server',
     renderers: ['flat', 'globe'],
-    defaultVisible: false,
+    defaultVisible: true,
     refreshInterval: 0,
   },
   {
@@ -62,6 +62,14 @@ export const LAYER_REGISTRY: LayerDefinition[] = [
     label: '都道府県',
     icon: 'map',
     renderers: ['flat'],
+    defaultVisible: true,
+    refreshInterval: 0,
+  },
+  {
+    key: 'cities',
+    label: '都市',
+    icon: 'map-pin',
+    renderers: ['flat', 'globe'],
     defaultVisible: true,
     refreshInterval: 0,
   },

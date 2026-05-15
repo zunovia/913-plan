@@ -7,7 +7,7 @@ export function useEarthquakes() {
   const { data, error, isLoading, mutate } = useSWR<{ data: Earthquake[]; updatedAt: string }>(
     '/api/disasters/earthquakes',
     fetcher,
-    { refreshInterval: 60_000, revalidateOnFocus: true }
+    { refreshInterval: 60_000, revalidateOnFocus: true },
   )
 
   return {

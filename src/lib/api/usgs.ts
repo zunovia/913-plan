@@ -1,11 +1,11 @@
-import type { Earthquake, USGSResponse } from '@/types/earthquake'
 import { isInJapanBounds } from '@/lib/geo/japan-bounds'
+import type { Earthquake, USGSResponse } from '@/types/earthquake'
 
 const USGS_API = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary'
 
 export async function fetchUSGSEarthquakes(
   period: 'hour' | 'day' | 'week' = 'week',
-  minMag = 2.5
+  minMag = 2.5,
 ): Promise<Earthquake[]> {
   const file = `${minMag}_${period}.geojson`
   const res = await fetch(`${USGS_API}/${file}`, { next: { revalidate: 300 } })

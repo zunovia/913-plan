@@ -18,7 +18,13 @@ export interface P2PEarthquake {
   issue: { source: string; time: string; type: string }
   earthquake: {
     time: string
-    hypocenter: { name: string; latitude: number; longitude: number; depth: number; magnitude: number }
+    hypocenter: {
+      name: string
+      latitude: number
+      longitude: number
+      depth: number
+      magnitude: number
+    }
     maxScale: number
     domesticTsunami: string
   }

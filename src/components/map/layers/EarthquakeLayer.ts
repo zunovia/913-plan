@@ -1,6 +1,6 @@
 import { ScatterplotLayer } from '@deck.gl/layers'
-import type { Earthquake } from '@/types/earthquake'
 import { magnitudeToColor, magnitudeToRadius } from '@/lib/geo/intensity-scale'
+import type { Earthquake } from '@/types/earthquake'
 
 export function createEarthquakeLayer(data: Earthquake[], visible: boolean) {
   return new ScatterplotLayer<Earthquake>({

@@ -1,21 +1,24 @@
 'use client'
 
-import { useMapStore } from '@/stores/mapStore'
-import { LAYER_REGISTRY } from '@/components/map/layers/registry'
-import { Layers, ChevronDown } from 'lucide-react'
+import { ChevronDown, Eye, EyeOff, Layers } from 'lucide-react'
 import { useState } from 'react'
+import { LAYER_REGISTRY } from '@/components/map/layers/registry'
+import { useMapStore } from '@/stores/mapStore'
 
 export function LayerToggle() {
-  const { visibleLayers, toggleLayer, mode } = useMapStore()
+  const { visibleLayers, toggleLayer, hideAllLayers, showAllLayers, mode } = useMapStore()
   const [isOpen, setIsOpen] = useState(false)
 
   const availableLayers = LAYER_REGISTRY.filter((l) =>
-    l.renderers.includes(mode === '2d' ? 'flat' : 'globe')
+    l.renderers.includes(mode === '2d' ? 'flat' : 'globe'),
   )
+
+  const hasVisible = visibleLayers.size > 0
 
   return (
     <div className="absolute bottom-24 right-4 z-10">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-3 py-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-300 hover:text-white transition-colors text-xs"
       >
@@ -26,6 +29,26 @@ export function LayerToggle() {
 
       {isOpen && (
         <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-900/95 backdrop-blur-sm rounded-lg border border-gray-700/50 p-2 space-y-0.5">
+          {/* Toggle all button */}
+          <button
+            type="button"
+            onClick={() => (hasVisible ? hideAllLayers() : showAllLayers())}
+            className="flex items-center gap-2 w-full px-2 py-1.5 rounded hover:bg-gray-800/50 text-xs transition-colors"
+          >
+            {hasVisible ? (
+              <>
+                <EyeOff size={12} className="text-gray-500" />
+                <span className="text-gray-400">全て非表示</span>
+              </>
+            ) : (
+              <>
+                <Eye size={12} className="text-blue-400" />
+                <span className="text-blue-400">全て表示</span>
+              </>
+            )}
+          </button>
+          <div className="border-t border-gray-700/30 my-1" />
+
           {availableLayers.map((layer) => (
             <label
               key={layer.key}

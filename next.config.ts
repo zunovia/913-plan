@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   transpilePackages: ['globe.gl', 'react-globe.gl', 'three-globe'],
-  serverExternalPackages: ['rss-parser'],
+  serverExternalPackages: ['rss-parser', 'ws'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.nhk.or.jp' },

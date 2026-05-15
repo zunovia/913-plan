@@ -1,7 +1,10 @@
 import { GeoJsonLayer } from '@deck.gl/layers'
 import type { Feature, FeatureCollection } from 'geojson'
 
-export function createCableLayer(data: FeatureCollection | Feature | null | undefined, visible: boolean) {
+export function createCableLayer(
+  data: FeatureCollection | Feature | null | undefined,
+  visible: boolean,
+) {
   return new GeoJsonLayer({
     id: 'cable-layer',
     data: data ?? ({ type: 'FeatureCollection', features: [] } as FeatureCollection),

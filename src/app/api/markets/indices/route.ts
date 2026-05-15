@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { cachedFetch } from '@/lib/cache/redis'
 import { fetchMarketData } from '@/lib/api/market'
+import { cachedFetch } from '@/lib/cache/redis'
 
 export const runtime = 'nodejs'
 

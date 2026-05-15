@@ -7,7 +7,10 @@ export function useFlights() {
   const { data, error, isLoading } = useSWR<{ data: Flight[]; count: number }>(
     '/api/transport/flights',
     fetcher,
-    { refreshInterval: 15_000 }
+    {
+      refreshInterval: 10_000,
+      dedupingInterval: 8_000,
+    },
   )
 
   return {

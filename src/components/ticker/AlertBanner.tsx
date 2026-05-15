@@ -1,21 +1,34 @@
 'use client'
 
-import { useEarthquakes } from '@/hooks/useEarthquakes'
 import { AlertTriangle, X } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useEarthquakes } from '@/hooks/useEarthquakes'
+import type { Earthquake } from '@/types/earthquake'
 
 export function AlertBanner() {
   const { earthquakes } = useEarthquakes()
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+  const [recentAlerts, setRecentAlerts] = useState<Earthquake[]>([])
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const recentAlerts = useMemo(() => {
-    const fiveMinAgo = Date.now() - 5 * 60 * 1000
-    return earthquakes.filter(
-      (eq) =>
-        eq.magnitude >= 5 &&
-        new Date(eq.time).getTime() > fiveMinAgo &&
-        !dismissed.has(eq.id)
-    )
+  useEffect(() => {
+    function compute() {
+      const fiveMinAgo = Date.now() - 5 * 60 * 1000
+      setRecentAlerts(
+        earthquakes.filter(
+          (eq) =>
+            eq.magnitude >= 5 && new Date(eq.time).getTime() > fiveMinAgo && !dismissed.has(eq.id),
+        ),
+      )
+    }
+
+    compute()
+
+    // Re-evaluate every 30 seconds so stale alerts eventually disappear
+    intervalRef.current = setInterval(compute, 30_000)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [earthquakes, dismissed])
 
   if (recentAlerts.length === 0) return null
@@ -35,6 +48,7 @@ export function AlertBanner() {
         </p>
       </div>
       <button
+        type="button"
         onClick={() => setDismissed((prev) => new Set(prev).add(alert.id))}
         className="p-1 rounded hover:bg-red-800/50 text-red-300"
       >

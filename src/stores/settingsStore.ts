@@ -33,6 +33,6 @@ export const useSettingsStore = create<SettingsState>()(
       setShowTicker: (showTicker) => set({ showTicker }),
       setTickerSpeed: (tickerSpeed) => set({ tickerSpeed }),
     }),
-    { name: 'japan-monitor-settings' }
-  )
+    { name: 'japan-monitor-settings' },
+  ),
 )

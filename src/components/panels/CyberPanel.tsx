@@ -1,7 +1,9 @@
 'use client'
 
+import { ExternalLink, Loader2, ShieldAlert } from 'lucide-react'
+import type { MouseEvent } from 'react'
+import { useMediaFrame } from '@/components/map/MediaFrame'
 import { useCyberThreats } from '@/hooks/useCyberThreats'
-import { ShieldAlert, ExternalLink, Loader2 } from 'lucide-react'
 
 const SEVERITY_COLORS: Record<string, string> = {
   critical: 'bg-red-900/40 text-red-300',
@@ -13,6 +15,13 @@ const SEVERITY_COLORS: Record<string, string> = {
 
 export function CyberPanel() {
   const { threats, isLoading } = useCyberThreats()
+  const openMedia = useMediaFrame((s) => s.open)
+
+  const handleClick = (e: MouseEvent, link: string, title: string) => {
+    if (e.ctrlKey || e.metaKey) return
+    e.preventDefault()
+    openMedia(link, title)
+  }
 
   if (isLoading) {
     return (
@@ -36,6 +45,7 @@ export function CyberPanel() {
             href={t.link}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => handleClick(e, t.link, t.title)}
             className="block p-2 rounded bg-gray-800/30 hover:bg-gray-800/50 transition-colors group"
           >
             <div className="flex items-start gap-2">
@@ -44,7 +54,9 @@ export function CyberPanel() {
                   {t.title}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className={`text-[10px] px-1 rounded ${SEVERITY_COLORS[t.severity] ?? SEVERITY_COLORS.info}`}>
+                  <span
+                    className={`text-[10px] px-1 rounded ${SEVERITY_COLORS[t.severity] ?? SEVERITY_COLORS.info}`}
+                  >
                     {t.severity}
                   </span>
                   <span className="text-[10px] text-gray-600 uppercase">{t.source}</span>
@@ -53,7 +65,10 @@ export function CyberPanel() {
                   </span>
                 </div>
               </div>
-              <ExternalLink size={10} className="text-gray-600 group-hover:text-gray-400 mt-0.5 shrink-0" />
+              <ExternalLink
+                size={10}
+                className="text-gray-600 group-hover:text-gray-400 mt-0.5 shrink-0"
+              />
             </div>
           </a>
         ))}

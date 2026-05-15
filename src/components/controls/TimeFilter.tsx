@@ -17,6 +17,7 @@ export function TimeFilter() {
     <div className="absolute bottom-24 left-16 z-10 flex gap-0.5 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 p-1">
       {TIME_OPTIONS.map(({ value, label }) => (
         <button
+          type="button"
           key={value}
           onClick={() => setTimeRange(value)}
           className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${

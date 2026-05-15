@@ -7,7 +7,7 @@ export function useMarketData() {
   const { data, error, isLoading } = useSWR<{ data: MarketData | null }>(
     '/api/markets/indices',
     fetcher,
-    { refreshInterval: 60_000 }
+    { refreshInterval: 60_000 },
   )
 
   return {

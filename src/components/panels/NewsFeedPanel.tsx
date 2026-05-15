@@ -1,11 +1,21 @@
 'use client'
 
+import { ExternalLink, Loader2, PlayCircle, Rss, Sparkles } from 'lucide-react'
+import type { MouseEvent } from 'react'
+import { useMediaFrame } from '@/components/map/MediaFrame'
 import { useNewsFeed, useNewsSummary } from '@/hooks/useNewsFeed'
-import { ExternalLink, Sparkles, PlayCircle, Rss, Loader2 } from 'lucide-react'
 
 export function NewsFeedPanel() {
   const { news, isLoading } = useNewsFeed()
   const { summary, isLoading: summaryLoading } = useNewsSummary()
+  const openMedia = useMediaFrame((s) => s.open)
+
+  const handleClick = (e: MouseEvent, link: string, title: string) => {
+    // Ctrl+click or middle-click: open in new tab (default browser behavior)
+    if (e.ctrlKey || e.metaKey) return
+    e.preventDefault()
+    openMedia(link, title)
+  }
 
   return (
     <div className="p-3 space-y-3">
@@ -20,7 +30,8 @@ export function NewsFeedPanel() {
             {summary.summary}
           </p>
           <p className="text-[10px] text-gray-500 mt-2">
-            {summary.articleCount}件の記事から生成 · {new Date(summary.generatedAt).toLocaleTimeString('ja-JP')}
+            {summary.articleCount}件の記事から生成 ·{' '}
+            {new Date(summary.generatedAt).toLocaleTimeString('ja-JP')}
           </p>
         </div>
       )}
@@ -44,6 +55,7 @@ export function NewsFeedPanel() {
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => handleClick(e, item.link, item.title)}
               className="block p-2 rounded hover:bg-gray-800/50 transition-colors group"
             >
               <div className="flex items-start gap-2">
@@ -58,15 +70,18 @@ export function NewsFeedPanel() {
                       <Rss size={10} className="text-orange-400" />
                     )}
                     <span className="text-[10px] text-gray-500">{item.source}</span>
-                    <span className="text-[10px] text-gray-600">
-                      {formatTimeAgo(item.pubDate)}
-                    </span>
-                    <span className={`text-[10px] px-1 rounded ${item.language === 'ja' ? 'bg-red-900/30 text-red-400' : 'bg-blue-900/30 text-blue-400'}`}>
+                    <span className="text-[10px] text-gray-600">{formatTimeAgo(item.pubDate)}</span>
+                    <span
+                      className={`text-[10px] px-1 rounded ${item.language === 'ja' ? 'bg-red-900/30 text-red-400' : 'bg-blue-900/30 text-blue-400'}`}
+                    >
                       {item.language.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <ExternalLink size={12} className="text-gray-600 group-hover:text-gray-400 mt-0.5 shrink-0" />
+                <ExternalLink
+                  size={12}
+                  className="text-gray-600 group-hover:text-gray-400 mt-0.5 shrink-0"
+                />
               </div>
             </a>
           ))}

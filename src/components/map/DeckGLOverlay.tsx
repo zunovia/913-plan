@@ -1,10 +1,9 @@
 'use client'
 
-import { useControl } from 'react-map-gl/maplibre'
-import { MapboxOverlay } from '@deck.gl/mapbox'
+import type { Layer, LayersList } from '@deck.gl/core'
 import type { MapboxOverlayProps } from '@deck.gl/mapbox'
-import type { Layer } from '@deck.gl/core'
-import type { LayersList } from '@deck.gl/core'
+import { MapboxOverlay } from '@deck.gl/mapbox'
+import { useControl } from 'react-map-gl/maplibre'
 
 type DeckLayer = false | LayersList | Layer | null | undefined
 
@@ -14,10 +13,9 @@ interface DeckGLOverlayProps {
 }
 
 export function DeckGLOverlay({ layers, onClick }: DeckGLOverlayProps) {
-  const overlay = useControl<MapboxOverlay>(
-    () => new MapboxOverlay({ layers, onClick }),
-    { position: 'top-left' }
-  )
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({ layers, onClick }), {
+    position: 'top-left',
+  })
 
   overlay.setProps({ layers, onClick })
 

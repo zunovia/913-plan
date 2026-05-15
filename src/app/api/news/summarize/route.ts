@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { cachedFetch } from '@/lib/cache/redis'
 import { summarizeNews } from '@/lib/api/groq'
 import { fetchRSSFeed, getAllFeedConfigs } from '@/lib/api/rss'
-import { sortNewsByDate, deduplicateNews } from '@/lib/transform/news'
+import { cachedFetch } from '@/lib/cache/redis'
+import { deduplicateNews, sortNewsByDate } from '@/lib/transform/news'
 
 export const runtime = 'nodejs'
 

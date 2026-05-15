@@ -12,11 +12,10 @@ async function fetchJPCERT(): Promise<CyberThreat[]> {
     if (!res.ok) return []
     const text = await res.text()
 
-    const items: CyberThreat[] = []
     const itemRegex = /<item[\s\S]*?<\/item>/g
-    let match: RegExpExecArray | null
+    const matches = [...text.matchAll(itemRegex)]
 
-    while ((match = itemRegex.exec(text)) !== null) {
+    const items: CyberThreat[] = matches.flatMap((match) => {
       const content = match[0]
       const title = content.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim()
       const link = content.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim()
@@ -24,17 +23,20 @@ async function fetchJPCERT(): Promise<CyberThreat[]> {
       const desc = content.match(/<description>([\s\S]*?)<\/description>/)?.[1]?.trim()
 
       if (title && link) {
-        items.push({
-          id: `jpcert-${Buffer.from(link).toString('base64').slice(0, 12)}`,
-          title,
-          description: desc ?? '',
-          source: 'jpcert',
-          severity: 'medium',
-          publishedAt: date ?? new Date().toISOString(),
-          link,
-        })
+        return [
+          {
+            id: `jpcert-${simpleHash(link)}`,
+            title,
+            description: desc ?? '',
+            source: 'jpcert' as const,
+            severity: 'medium' as const,
+            publishedAt: date ?? new Date().toISOString(),
+            link,
+          },
+        ]
       }
-    }
+      return []
+    })
 
     return items
   } catch {
@@ -42,12 +44,21 @@ async function fetchJPCERT(): Promise<CyberThreat[]> {
   }
 }
 
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash + char) | 0
+  }
+  return (hash >>> 0).toString(36)
+}
+
 export async function GET() {
   try {
     const threats = await cachedFetch('cyber:threats', 600, async () => {
       const jpcert = await fetchJPCERT()
       return jpcert.sort(
-        (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+        (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
       )
     })
 

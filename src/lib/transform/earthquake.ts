@@ -1,5 +1,5 @@
-import type { Earthquake } from '@/types/earthquake'
 import { magnitudeToColor, magnitudeToRadius } from '@/lib/geo/intensity-scale'
+import type { Earthquake } from '@/types/earthquake'
 
 export function earthquakeToScatterData(earthquakes: Earthquake[]) {
   return earthquakes.map((eq) => ({
@@ -12,7 +12,7 @@ export function earthquakeToScatterData(earthquakes: Earthquake[]) {
 
 export function filterEarthquakesByTime(
   earthquakes: Earthquake[],
-  range: '1h' | '6h' | '24h' | '7d' | '30d'
+  range: '1h' | '6h' | '24h' | '7d' | '30d',
 ): Earthquake[] {
   const now = Date.now()
   const msMap: Record<string, number> = {
@@ -43,6 +43,6 @@ export function deduplicateEarthquakes(p2p: Earthquake[], usgs: Earthquake[]): E
   }
 
   return Array.from(seen.values()).sort(
-    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
   )
 }

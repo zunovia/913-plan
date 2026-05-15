@@ -1,7 +1,10 @@
 import { GeoJsonLayer } from '@deck.gl/layers'
 import type { Feature, FeatureCollection } from 'geojson'
 
-export function createPrefectureLayer(data: FeatureCollection | Feature | null | undefined, visible: boolean) {
+export function createPrefectureLayer(
+  data: FeatureCollection | Feature | null | undefined,
+  visible: boolean,
+) {
   return new GeoJsonLayer({
     id: 'prefecture-layer',
     data: data ?? ({ type: 'FeatureCollection', features: [] } as FeatureCollection),

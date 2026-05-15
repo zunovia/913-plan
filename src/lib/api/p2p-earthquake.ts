@@ -1,5 +1,5 @@
-import type { Earthquake, P2PEarthquake } from '@/types/earthquake'
 import { getIntensityLabel } from '@/lib/geo/intensity-scale'
+import type { Earthquake, P2PEarthquake } from '@/types/earthquake'
 
 const P2P_API = 'https://api.p2pquake.net/v2'
 

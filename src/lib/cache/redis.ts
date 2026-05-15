@@ -14,7 +14,7 @@ function getRedis(): Redis | null {
 export async function cachedFetch<T>(
   key: string,
   ttlSeconds: number,
-  fetchFn: () => Promise<T>
+  fetchFn: () => Promise<T>,
 ): Promise<T> {
   const r = getRedis()
   if (r) {
