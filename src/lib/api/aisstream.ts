@@ -107,8 +107,8 @@ export async function fetchVesselSnapshot(
       finish()
     })
 
-    // Safety timeout
-    setTimeout(finish, durationMs + 2000)
+    // Safety timeout — must complete before Vercel kills the function
+    setTimeout(finish, durationMs + 1500)
   })
 }
 
