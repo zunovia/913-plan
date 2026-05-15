@@ -41,13 +41,14 @@ async function writeToRedis(vessels) {
     updatedAt: new Date().toISOString(),
   }
 
-  const res = await fetch(`${redisUrl}/set/${REDIS_KEY}/${REDIS_TTL}`, {
+  const value = JSON.stringify(payload)
+  const res = await fetch(`${redisUrl}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${redisToken}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(JSON.stringify(payload)),
+    body: JSON.stringify(['SET', REDIS_KEY, value, 'EX', REDIS_TTL]),
   })
 
   if (!res.ok) {
