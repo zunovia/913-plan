@@ -40,7 +40,6 @@ const DEFAULT_VISIBLE: LayerType[] = [
   'prefectures',
   'cities',
   'flights',
-  'vessels',
   'cables',
   'dataCenters',
 ]

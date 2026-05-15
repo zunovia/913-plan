@@ -7,7 +7,7 @@ export function useVessels() {
   const { data, error, isLoading } = useSWR<{ data: Vessel[]; count: number }>(
     '/api/transport/vessels',
     fetcher,
-    { refreshInterval: 120_000 },
+    { refreshInterval: 300_000 },
   )
 
   return {
