@@ -1,13 +1,42 @@
 'use client'
 
-import { ChevronDown, Eye, EyeOff, Layers } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronDown, Eye, EyeOff, GripVertical, Layers } from 'lucide-react'
+import { useCallback, useRef, useState } from 'react'
 import { LAYER_REGISTRY } from '@/components/map/layers/registry'
 import { useMapStore } from '@/stores/mapStore'
 
 export function LayerToggle() {
   const { visibleLayers, toggleLayer, hideAllLayers, showAllLayers, mode } = useMapStore()
   const [isOpen, setIsOpen] = useState(false)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const dragging = useRef(false)
+  const dragStart = useRef({ x: 0, y: 0, px: 0, py: 0 })
+  const moved = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    // Only drag from the grip handle
+    const target = e.target as HTMLElement
+    if (!target.closest('[data-drag-handle]')) return
+
+    dragging.current = true
+    moved.current = false
+    dragStart.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y }
+    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    e.preventDefault()
+  }, [pos])
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging.current) return
+    const dx = e.clientX - dragStart.current.x
+    const dy = e.clientY - dragStart.current.y
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved.current = true
+    setPos({ x: dragStart.current.px + dx, y: dragStart.current.py + dy })
+  }, [])
+
+  const onPointerUp = useCallback(() => {
+    dragging.current = false
+  }, [])
 
   const availableLayers = LAYER_REGISTRY.filter((l) =>
     l.renderers.includes(mode === '2d' ? 'flat' : 'globe'),
@@ -16,16 +45,34 @@ export function LayerToggle() {
   const hasVisible = visibleLayers.size > 0
 
   return (
-    <div className="absolute bottom-24 right-4 z-10">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-300 hover:text-white transition-colors text-xs"
-      >
-        <Layers size={14} />
-        レイヤー
-        <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+    <div
+      ref={containerRef}
+      className="absolute bottom-24 right-4 z-10"
+      style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+    >
+      <div className="flex items-center gap-0">
+        {/* Drag handle */}
+        <div
+          data-drag-handle
+          className="flex items-center px-1 py-2 cursor-grab active:cursor-grabbing text-gray-600 hover:text-gray-400 transition-colors"
+        >
+          <GripVertical size={12} />
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (!moved.current) setIsOpen(!isOpen)
+          }}
+          className="flex items-center gap-1.5 px-3 py-2 bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700/50 text-gray-300 hover:text-white transition-colors text-xs"
+        >
+          <Layers size={14} />
+          レイヤー
+          <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
 
       {isOpen && (
         <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-900/95 backdrop-blur-sm rounded-lg border border-gray-700/50 p-2 space-y-0.5">
