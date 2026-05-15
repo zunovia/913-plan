@@ -13,8 +13,10 @@ export function createPrefectureLayer(
     stroked: true,
     filled: true,
     lineWidthMinPixels: 1,
-    getFillColor: [100, 100, 100, 20],
-    getLineColor: [200, 200, 200, 80],
+    getFillColor: [80, 80, 120, 15],
+    getLineColor: [150, 150, 200, 100],
     getLineWidth: 1,
+    autoHighlight: true,
+    highlightColor: [100, 150, 255, 60],
   })
 }

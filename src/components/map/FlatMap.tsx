@@ -4,9 +4,11 @@ import type { PickingInfo } from '@deck.gl/core'
 import type { FeatureCollection } from 'geojson'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactMapGL, { NavigationControl } from 'react-map-gl/maplibre'
+import { useCyberThreats } from '@/hooks/useCyberThreats'
 import { useEarthquakes } from '@/hooks/useEarthquakes'
 import { useFlights } from '@/hooks/useFlights'
 import { useVessels } from '@/hooks/useVessels'
+import { useWarnings } from '@/hooks/useWarnings'
 import type { City } from '@/lib/geo/cities'
 import {
   getGoogleMapsEmbedUrl,
@@ -23,11 +25,13 @@ import {
   createCityLabelLayer,
   createWorldCityTimeLayer,
 } from './layers/CityLayer'
+import { createCyberThreatLayer } from './layers/CyberThreatLayer'
 import { createDataCenterLayer } from './layers/DataCenterLayer'
 import { createEarthquakeLayer } from './layers/EarthquakeLayer'
 import { createFlightLayer } from './layers/FlightLayer'
 import { createPrefectureLayer } from './layers/PrefectureLayer'
 import { createVesselLayer } from './layers/VesselLayer'
+import { createWeatherWarningLayer } from './layers/WeatherLayer'
 import { useMediaFrame } from './MediaFrame'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -51,17 +55,29 @@ export function FlatMap() {
   const { earthquakes } = useEarthquakes()
   const { flights } = useFlights()
   const { vessels } = useVessels()
+  const { threats } = useCyberThreats()
+  const { warnings } = useWarnings()
   const openMedia = useMediaFrame((s) => s.open)
 
   const [cableData, setCableData] = useState<FeatureCollection | null>(null)
   const [dcData, setDcData] = useState<DCPoint[]>([])
+  const [prefData, setPrefData] = useState<FeatureCollection | null>(null)
   const [timeTick, setTimeTick] = useState(0)
+  const [animTick, setAnimTick] = useState(0)
 
   // Update world city clocks every 30s
   useEffect(() => {
     const interval = setInterval(() => setTimeTick((t) => t + 1), 30_000)
     return () => clearInterval(interval)
   }, [])
+
+  // Pulse animation for cyber threat layer (only when visible)
+  const cyberVisible = visibleLayers.has('cyberThreats')
+  useEffect(() => {
+    if (!cyberVisible) return
+    const interval = setInterval(() => setAnimTick((t) => t + 1), 500)
+    return () => clearInterval(interval)
+  }, [cyberVisible])
 
   // Load static GeoJSON data
   useEffect(() => {
@@ -73,6 +89,11 @@ export function FlatMap() {
     fetch('/geojson/data-centers.json')
       .then((r) => r.json())
       .then(setDcData)
+      .catch(() => {})
+
+    fetch('/geojson/japan-prefectures.json')
+      .then((r) => r.json())
+      .then(setPrefData)
       .catch(() => {})
   }, [])
 
@@ -99,9 +120,11 @@ export function FlatMap() {
   const layers = useMemo(() => {
     return [
       createCableLayer(cableData, visibleLayers.has('cables')),
-      createPrefectureLayer(null, visibleLayers.has('prefectures')),
+      createPrefectureLayer(prefData, visibleLayers.has('prefectures')),
       createDataCenterLayer(dcData, visibleLayers.has('dataCenters')),
       createEarthquakeLayer(earthquakes, visibleLayers.has('earthquakes')),
+      createWeatherWarningLayer(warnings, visibleLayers.has('weather')),
+      createCyberThreatLayer(threats, visibleLayers.has('cyberThreats'), animTick),
       ...createFlightLayer(flights, visibleLayers.has('flights'), selectedFlightId),
       ...createVesselLayer(vessels, visibleLayers.has('vessels'), selectedVesselId),
       createCityDotLayer(ALL_CITIES, citiesVisible),
@@ -110,13 +133,17 @@ export function FlatMap() {
     ]
   }, [
     earthquakes,
+    warnings,
+    threats,
     flights,
     vessels,
     cableData,
     dcData,
+    prefData,
     visibleLayers,
     citiesVisible,
     timeTick,
+    animTick,
     selectedFlightId,
     selectedVesselId,
   ])
@@ -132,6 +159,16 @@ export function FlatMap() {
         const city = info.object as City
         const embedUrl = getGoogleMapsEmbedUrl(city)
         openMedia(embedUrl, `${city.name} (${city.nameEn}) - Google Maps`, getGoogleMapsUrl(city))
+        return
+      }
+
+      if (layerId === 'weather-warning-layer') {
+        selectFeature({ type: 'weather', id: String(Date.now()), data: info.object })
+        return
+      }
+
+      if (layerId === 'cyber-threat-layer') {
+        selectFeature({ type: 'cyberThreats', id: String(Date.now()), data: info.object })
         return
       }
 
