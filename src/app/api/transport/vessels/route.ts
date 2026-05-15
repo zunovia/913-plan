@@ -23,11 +23,13 @@ export async function GET() {
       fetchVesselSnapshot(apiKey, 8_000, 200),
     )
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       data: vessels,
       count: vessels.length,
       updatedAt: new Date().toISOString(),
     })
+    res.headers.set('Cache-Control', 's-maxage=120, stale-while-revalidate=300')
+    return res
   } catch (error) {
     console.error('Vessel API error:', error)
     return NextResponse.json(

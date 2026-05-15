@@ -14,6 +14,10 @@ function getRedis(): Redis | null {
 // In-memory fallback cache for when Redis is unavailable
 const memCache = new Map<string, { data: unknown; expiresAt: number }>()
 
+function isEmptyArray(data: unknown): boolean {
+  return Array.isArray(data) && data.length === 0
+}
+
 export async function cachedFetch<T>(
   key: string,
   ttlSeconds: number,
@@ -30,7 +34,7 @@ export async function cachedFetch<T>(
     }
   }
 
-  // Try in-memory cache
+  // Try in-memory cache (return if still valid)
   const mem = memCache.get(key)
   if (mem && mem.expiresAt > Date.now()) {
     return mem.data as T
@@ -38,8 +42,15 @@ export async function cachedFetch<T>(
 
   const data = await fetchFn()
 
-  // Store in Redis
-  if (r && ttlSeconds > 0) {
+  // If fetch returned empty array but we have stale data, prefer stale data
+  if (isEmptyArray(data) && mem && !isEmptyArray(mem.data)) {
+    // Extend stale cache by half the TTL to avoid hammering the API
+    mem.expiresAt = Date.now() + (ttlSeconds * 1000) / 2
+    return mem.data as T
+  }
+
+  // Store in Redis (only non-empty data)
+  if (r && ttlSeconds > 0 && !isEmptyArray(data)) {
     try {
       await r.set(key, JSON.stringify(data), { ex: ttlSeconds })
     } catch {

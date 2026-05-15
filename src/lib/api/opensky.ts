@@ -7,16 +7,26 @@ export async function fetchFlights(): Promise<Flight[]> {
   const { south, north, west, east } = JAPAN_BOUNDS
   const url = `${OPENSKY_API}/states/all?lamin=${south}&lomin=${west}&lamax=${north}&lomax=${east}`
 
+  // Build headers with optional authentication
+  const headers: Record<string, string> = {}
+  const user = process.env.OPENSKY_USERNAME
+  const pass = process.env.OPENSKY_PASSWORD
+  if (user && pass) {
+    headers.Authorization = `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`
+  }
+
   try {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 8000)
     const res = await fetch(url, {
       signal: controller.signal,
+      headers,
       next: { revalidate: 60 },
     })
     clearTimeout(timeout)
+
     if (!res.ok) {
-      console.error(`OpenSky API returned ${res.status}`)
+      console.error(`OpenSky API returned ${res.status}: ${res.statusText}`)
       return []
     }
     const data = await res.json()
@@ -38,7 +48,12 @@ export async function fetchFlights(): Promise<Flight[]> {
         lastContact: s[4] as number,
       }))
       .filter((f: Flight) => f.latitude && f.longitude)
-  } catch {
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.error('OpenSky API request timed out')
+    } else {
+      console.error('OpenSky API error:', err)
+    }
     return []
   }
 }
