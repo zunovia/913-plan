@@ -2,16 +2,19 @@
 
 import { MapPin, Moon, Settings, Sun } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { useSettingsStore } from '@/stores/settingsStore'
 
 export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  useClickOutside(containerRef, () => { if (isOpen) setIsOpen(false) })
   const { theme, tileProvider, setTheme, setTileProvider, autoRotateGlobe, setAutoRotateGlobe } =
     useSettingsStore()
 
   return (
-    <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+    <div ref={containerRef} className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

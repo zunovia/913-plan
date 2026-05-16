@@ -3,11 +3,14 @@
 import { ChevronDown, Eye, EyeOff, GripVertical, Layers } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { LAYER_REGISTRY } from '@/components/map/layers/registry'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { useMapStore } from '@/stores/mapStore'
 
 export function LayerToggle() {
   const { visibleLayers, toggleLayer, hideAllLayers, showAllLayers, mode } = useMapStore()
   const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  useClickOutside(containerRef, () => { if (isOpen) setIsOpen(false) })
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const dragging = useRef(false)
   const dragStart = useRef({ x: 0, y: 0, px: 0, py: 0 })
@@ -45,6 +48,7 @@ export function LayerToggle() {
 
   return (
     <div
+      ref={containerRef}
       className="absolute bottom-20 right-3 md:bottom-24 md:right-4 z-10"
       style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
     >

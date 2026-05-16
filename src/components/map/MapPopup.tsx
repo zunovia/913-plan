@@ -11,7 +11,8 @@ import {
   Ship,
   X,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { type ReactNode, useCallback, useRef } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import type { DCPoint } from '@/components/map/layers/DataCenterLayer'
 import { useMapStore } from '@/stores/mapStore'
 import type { CyberThreat } from '@/types/cyber'
@@ -96,6 +97,10 @@ function getShipTypeName(type: number): string {
 
 export function MapPopup() {
   const { selectedFeature, clearSelection } = useMapStore()
+  const popupRef = useRef<HTMLDivElement>(null)
+  const onClickOutside = useCallback(() => { clearSelection() }, [clearSelection])
+  useClickOutside(popupRef, onClickOutside)
+
   if (!selectedFeature) return null
 
   const config = TYPE_CONFIG[selectedFeature.type] ?? {
@@ -106,6 +111,7 @@ export function MapPopup() {
 
   return (
     <div
+      ref={popupRef}
       className={`fixed top-16 left-3 right-3 z-[35] w-auto md:absolute md:top-20 md:left-16 md:right-auto md:w-72 bg-gray-900/95 backdrop-blur-sm rounded-lg border-l-2 ${config.borderColor} border border-gray-700/50 shadow-xl`}
     >
       {/* Header */}

@@ -2,6 +2,8 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useCallback, useRef } from 'react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 import { useResponsive } from '@/hooks/useResponsive'
 import { usePanelStore } from '@/stores/panelStore'
 import { CyberPanel } from './CyberPanel'
@@ -24,6 +26,9 @@ const PANELS = {
 
 export function PanelContainer() {
   const { activePanel, isPanelOpen, closePanel } = usePanelStore()
+  const panelRef = useRef<HTMLDivElement>(null)
+  const onClickOutside = useCallback(() => { if (isPanelOpen) closePanel() }, [isPanelOpen, closePanel])
+  useClickOutside(panelRef, onClickOutside)
   const breakpoint = useResponsive()
   const isMobile = breakpoint === 'mobile'
 
@@ -37,6 +42,7 @@ export function PanelContainer() {
     <AnimatePresence>
       {isPanelOpen && PanelComponent && (
         <motion.div
+          ref={panelRef}
           {...motionProps}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className={
