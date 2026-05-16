@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 const PASSWORD = process.env.SITE_PASSWORD ?? '090909###'
 const COOKIE_NAME = 'auth_token'

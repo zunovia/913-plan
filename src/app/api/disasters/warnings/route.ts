@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { cachedFetch } from '@/lib/cache/redis'
 import { getAreaCoords } from '@/lib/geo/prefecture-coords'
-import { ACTIVE_STATUSES, WARNING_CODE_MAP } from '@/types/warning'
 import type { WeatherWarning } from '@/types/warning'
+import { ACTIVE_STATUSES, WARNING_CODE_MAP } from '@/types/warning'
 
 export const runtime = 'nodejs'
 

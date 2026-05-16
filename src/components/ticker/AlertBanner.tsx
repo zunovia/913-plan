@@ -18,17 +18,15 @@ export function AlertBanner() {
     }
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tick intentionally triggers re-evaluation on timer
   const recentAlerts = useMemo(() => {
     const fiveMinAgo = Date.now() - 5 * 60 * 1000
     const dismissed = new Set(dismissedIds)
     return earthquakes.filter(
       (eq) =>
-        eq.magnitude >= 5 &&
-        new Date(eq.time).getTime() > fiveMinAgo &&
-        !dismissed.has(eq.id),
+        eq.magnitude >= 5 && new Date(eq.time).getTime() > fiveMinAgo && !dismissed.has(eq.id),
     )
     // tick forces re-evaluation every 30s
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [earthquakes, dismissedIds, tick])
 
   const dismiss = useCallback((id: string) => {

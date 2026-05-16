@@ -31,7 +31,7 @@ interface MediaFrameState {
 
 function getMobileLayout(): FrameLayout {
   const w = typeof window !== 'undefined' ? window.innerWidth : 375
-  return { x: 0, bottomY: 88, w, h: Math.round(w * 9 / 16) }
+  return { x: 0, bottomY: 88, w, h: Math.round((w * 9) / 16) }
 }
 
 function getDefaultLayout(): FrameLayout {
@@ -56,14 +56,23 @@ export const useMediaFrame = create<MediaFrameState>((set) => ({
       layout: getDefaultLayout(),
     }),
   close: () =>
-    set({ url: null, externalUrl: null, title: '', isExpanded: false, layout: { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H } }),
+    set({
+      url: null,
+      externalUrl: null,
+      title: '',
+      isExpanded: false,
+      layout: { x: 56, bottomY: 44, w: DEFAULT_W, h: DEFAULT_H },
+    }),
   toggleExpand: () =>
     set((s) => {
       if (typeof window !== 'undefined' && window.innerWidth < 768) {
         // Mobile: toggle fullscreen
         const next = !s.isExpanded
         if (next) {
-          return { isExpanded: true, layout: { x: 0, bottomY: 0, w: window.innerWidth, h: window.innerHeight } }
+          return {
+            isExpanded: true,
+            layout: { x: 0, bottomY: 0, w: window.innerWidth, h: window.innerHeight },
+          }
         }
         return { isExpanded: false, layout: getMobileLayout() }
       }
@@ -128,14 +137,17 @@ export function MediaFrame() {
   }, [])
 
   // Drag handlers
-  const onDragStart = useCallback((e: React.MouseEvent) => {
-    if (isMobile) return
-    e.preventDefault()
-    setIsDragging(true)
-    const rect = frameRef.current?.getBoundingClientRect()
-    if (!rect) return
-    dragStart.current = { mx: e.clientX, my: e.clientY, ox: rect.left, oy: rect.top }
-  }, [isMobile])
+  const onDragStart = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMobile) return
+      e.preventDefault()
+      setIsDragging(true)
+      const rect = frameRef.current?.getBoundingClientRect()
+      if (!rect) return
+      dragStart.current = { mx: e.clientX, my: e.clientY, ox: rect.left, oy: rect.top }
+    },
+    [isMobile],
+  )
 
   useEffect(() => {
     if (!isDragging) return
@@ -227,7 +239,10 @@ export function MediaFrame() {
           aria-label="メディアフレームヘッダー"
           onMouseDown={onDragStart}
           className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800/90 border-b border-gray-700/50 select-none"
-          style={{ cursor: isMobile ? 'default' : isDragging ? 'grabbing' : 'grab', height: headerH }}
+          style={{
+            cursor: isMobile ? 'default' : isDragging ? 'grabbing' : 'grab',
+            height: headerH,
+          }}
         >
           {!isMobile && <GripHorizontal size={12} className="text-gray-600 shrink-0" />}
           <p className="flex-1 text-[11px] text-gray-300 truncate">{title}</p>

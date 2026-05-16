@@ -11,7 +11,10 @@ export interface WeatherWarning {
 // 気象庁 bosai API map.json の警報コード定義
 // https://www.jma.go.jp/bosai/warning/
 // 特別警報: 02-07, 警報: 10-16, 注意報: 17-32
-export const WARNING_CODE_MAP: Record<string, { name: string; level: 'advisory' | 'warning' | 'emergency' }> = {
+export const WARNING_CODE_MAP: Record<
+  string,
+  { name: string; level: 'advisory' | 'warning' | 'emergency' }
+> = {
   // 特別警報 (Emergency)
   '02': { name: '暴風雪', level: 'emergency' },
   '03': { name: '大雨', level: 'emergency' },

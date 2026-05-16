@@ -10,9 +10,9 @@ export interface DCPoint {
 }
 
 const TIER_COLOR: Record<number, [number, number, number, number]> = {
-  4: [200, 50, 255, 230],   // Tier 4: bright purple
-  3: [140, 80, 255, 200],   // Tier 3: purple
-  2: [100, 120, 220, 180],  // Tier 2: blue-purple
+  4: [200, 50, 255, 230], // Tier 4: bright purple
+  3: [140, 80, 255, 200], // Tier 3: purple
+  2: [100, 120, 220, 180], // Tier 2: blue-purple
 }
 
 export function createDataCenterLayer(data: DCPoint[], visible: boolean) {

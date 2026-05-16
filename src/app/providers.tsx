@@ -21,9 +21,10 @@ function ThemeSync() {
       root.style.setProperty('--background', '#f5f5f5')
       root.style.setProperty('--foreground', '#171717')
     }
-    document.body.className = theme === 'dark'
-      ? 'h-full overflow-hidden bg-gray-950 text-gray-100'
-      : 'h-full overflow-hidden bg-gray-100 text-gray-900'
+    document.body.className =
+      theme === 'dark'
+        ? 'h-full overflow-hidden bg-gray-950 text-gray-100'
+        : 'h-full overflow-hidden bg-gray-100 text-gray-900'
   }, [theme])
 
   return null

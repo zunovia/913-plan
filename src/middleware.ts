@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 const PASSWORD = process.env.SITE_PASSWORD ?? '090909###'
 const COOKIE_NAME = 'auth_token'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
 
 function hashToken(password: string): string {
   // Simple but sufficient token for cookie-based auth

@@ -12,6 +12,7 @@ import {
 } from '@/lib/geo/cities'
 
 const ALL_CITIES = [...JAPAN_CITIES, ...WORLD_CITIES]
+
 import { magnitudeToColor } from '@/lib/geo/intensity-scale'
 import { useMapStore } from '@/stores/mapStore'
 import { useSettingsStore } from '@/stores/settingsStore'

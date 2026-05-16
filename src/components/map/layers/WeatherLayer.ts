@@ -5,9 +5,9 @@ import type { WeatherWarning } from '@/types/warning'
 type RGBAColor = [number, number, number, number]
 
 const LEVEL_COLOR: Record<string, RGBAColor> = {
-  advisory: [234, 179, 8, 200],    // 注意報: 黄色  (yellow-500)
-  warning: [249, 115, 22, 220],    // 警報: オレンジ (orange-500)
-  emergency: [220, 38, 38, 240],   // 特別警報: 赤   (red-600)
+  advisory: [234, 179, 8, 200], // 注意報: 黄色  (yellow-500)
+  warning: [249, 115, 22, 220], // 警報: オレンジ (orange-500)
+  emergency: [220, 38, 38, 240], // 特別警報: 赤   (red-600)
 }
 
 const LEVEL_RADIUS: Record<string, number> = {
@@ -17,9 +17,9 @@ const LEVEL_RADIUS: Record<string, number> = {
 }
 
 const LEVEL_LINE_COLOR: Record<string, RGBAColor> = {
-  advisory: [253, 224, 71, 255],   // yellow-300
-  warning: [251, 146, 60, 255],    // orange-400
-  emergency: [239, 68, 68, 255],   // red-500
+  advisory: [253, 224, 71, 255], // yellow-300
+  warning: [251, 146, 60, 255], // orange-400
+  emergency: [239, 68, 68, 255], // red-500
 }
 
 export function createWeatherWarningLayer(data: WeatherWarning[], visible: boolean) {

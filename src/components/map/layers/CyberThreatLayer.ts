@@ -12,7 +12,7 @@ const JAPAN_HUBS = [
   { longitude: 132.4553, latitude: 34.3853 }, // Hiroshima
   { longitude: 135.1956, latitude: 34.6901 }, // Kobe
   { longitude: 135.7681, latitude: 35.0116 }, // Kyoto
-  { longitude: 139.638, latitude: 35.4437 },  // Yokohama
+  { longitude: 139.638, latitude: 35.4437 }, // Yokohama
   { longitude: 140.1063, latitude: 35.6073 }, // Chiba
   { longitude: 139.6455, latitude: 35.8617 }, // Saitama
   { longitude: 139.0236, latitude: 37.9026 }, // Niigata
@@ -23,11 +23,11 @@ const JAPAN_HUBS = [
 type SeverityColor = [number, number, number, number]
 
 const SEVERITY_COLOR: Record<string, SeverityColor> = {
-  critical: [220, 38, 38, 230],   // red-600
-  high: [234, 88, 12, 210],       // orange-600
-  medium: [202, 138, 4, 190],     // yellow-600
-  low: [37, 99, 235, 170],        // blue-600
-  info: [107, 114, 128, 150],     // gray-500
+  critical: [220, 38, 38, 230], // red-600
+  high: [234, 88, 12, 210], // orange-600
+  medium: [202, 138, 4, 190], // yellow-600
+  low: [37, 99, 235, 170], // blue-600
+  info: [107, 114, 128, 150], // gray-500
 }
 
 const SEVERITY_RADIUS: Record<string, number> = {
