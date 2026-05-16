@@ -12,7 +12,7 @@ const JAPAN_BBOX = [[20, 120], [50, 155]]
 const COLLECTION_DURATION_MS = 30_000
 const MAX_VESSELS = 300
 const REDIS_KEY = 'vessels:japan'
-const REDIS_TTL = 600 // 10 minutes
+const REDIS_TTL = 7200 // 2 hours (GitHub Actions cron may run ~1h apart)
 
 const SHIP_TYPE_NAMES = {
   30: 'Fishing',
