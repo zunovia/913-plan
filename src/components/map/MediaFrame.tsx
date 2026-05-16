@@ -232,6 +232,8 @@ export function MediaFrame() {
         exit={{ opacity: 0, scale: 0.95 }}
         className={`${isMobile ? 'fixed' : 'absolute'} z-40 shadow-2xl rounded-lg overflow-hidden border border-gray-700/50 bg-gray-900`}
         style={style}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
       >
         {/* Header — draggable on desktop only */}
         <div
